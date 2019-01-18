@@ -1,0 +1,36 @@
+= CMake extensions for CDT =
+
+CDT supports CMake project by providing a specific C/C++ project type.
+Unfortunately the UI to 
+
+== The cmakeopts.json file format ==
+
+This is a configuration file used to describe how to call cmake:
+
+* define the top-level `CMakeLists.txt`
+* define the build directory
+* list build types (`Debug`, `Release`, ...) and for each one the parameters list
+
+Example:
+
+----
+{
+  rootCMakeLists : "path/to/CMakeLists.txt",
+  buildDirectory : "path/to/build"
+  generator: "Ninja",
+  buildTypes: [
+    {
+      type : "Debug",
+      cmakeArgs : ""
+    },
+    {
+      type : "Release",
+      cmakeArgs : ""
+    },
+    ...
+  ]
+}
+----
+
+The plugin offers an editor for this file (it is registered to open files named `cmakeopts.json`)
+and a UI to invoke `cmake` as defined by the configuration file.
