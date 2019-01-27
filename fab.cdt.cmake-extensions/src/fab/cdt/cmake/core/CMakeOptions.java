@@ -59,9 +59,10 @@ public class CMakeOptions {
 		default:
 			Matcher m = BUILD_TYPE_PATH_PATTERN.matcher(path);
 			if (m.matches()) {
-				int buildTypeIndex = Integer.parseInt(m.group(1));
-				if (buildTypeIndex < buildTypes.length) {
-					buildTypes[buildTypeIndex].set(m.group(2), value);
+				String buildType = m.group(1);
+				for (int i = 0; i < buildTypes.length; i++) {
+					if (buildType.equals(buildTypes[i].buildType))
+						buildTypes[i].set(m.group(2), value);
 				}
 			}
 			break;
@@ -94,5 +95,5 @@ public class CMakeOptions {
 		return true;
 	}
 
-	private static final Pattern BUILD_TYPE_PATH_PATTERN = Pattern.compile("buildTypes\\[(\\d+)\\]/(.+)");
+	private static final Pattern BUILD_TYPE_PATH_PATTERN = Pattern.compile("buildTypes\\[([\\w-]+)\\]/(.+)");
 }

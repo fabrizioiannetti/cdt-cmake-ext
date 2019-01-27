@@ -7,6 +7,7 @@
             class="fab.cdt.cmake.ui.CmakeOptionsEditor"
             default="true"
             filenames="cmakeopts.json"
+            icon="icons/CMakeLogo.gif"
             id="fab.cdt.cmake-extensions.cmakeOptionsEditor"
             name="CMake options">
       </editor>

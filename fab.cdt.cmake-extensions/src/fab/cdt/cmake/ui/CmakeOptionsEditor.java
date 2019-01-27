@@ -189,7 +189,7 @@ public class CmakeOptionsEditor extends EditorPart {
 		String buildBase = computeBuildDirForBuildType(options, buildTypeOptions.buildType);
 		Text buildDirControl = createTextField(toolkit, client, "Builds in:", buildBase, false, null);
 		buildDirControl.setData("build_dir");
-		createTextField(toolkit, client, "Additional CMake args:", buildTypeOptions.cmakeArgs, "buildTypes[" + buildTypeIndex + "]/cmakeArgs");
+		createTextField(toolkit, client, "Additional CMake args:", buildTypeOptions.cmakeArgs, "buildTypes[" + buildTypeOptions.buildType + "]/cmakeArgs");
 		toolkit.paintBordersFor(client);
 	}
 
@@ -370,7 +370,6 @@ public class CmakeOptionsEditor extends EditorPart {
 		}
 		buildTypeSections.clear();
 	}
-
 
 	private void removeBuildTypeSection(String buildType) {
 		Composite body = form.getBody();
