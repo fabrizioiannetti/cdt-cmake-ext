@@ -187,7 +187,7 @@ public class CmakeOptionsEditor extends EditorPart {
 
 		// add fields
 		String buildBase = computeBuildDirForBuildType(options, buildTypeOptions.buildType);
-		Text buildDirControl = createTextField(toolkit, client, "Builds in:", buildBase, false, "");
+		Text buildDirControl = createTextField(toolkit, client, "Builds in:", buildBase, false, null);
 		buildDirControl.setData("build_dir");
 		createTextField(toolkit, client, "Additional CMake args:", buildTypeOptions.cmakeArgs, "buildTypes[" + buildTypeIndex + "]/cmakeArgs");
 		toolkit.paintBordersFor(client);
@@ -298,6 +298,16 @@ public class CmakeOptionsEditor extends EditorPart {
 		form = toolkit.createScrolledForm(parent);
 		toolkit.decorateFormHeading(form.getForm());
 		form.setText("CMake Options (cmake " + cMakeVersion + ")");
+		Action dumpAction = new Action("D") {
+			@Override
+			public void run() {
+				if (store != null)
+					store.dump();
+				else
+					System.out.println("Dump: no store");
+			}
+		};
+		dumpAction.setToolTipText("Dump model content to stdout");
 		Action addBuildTypeAction = new Action("+") {
 			@Override
 			public void run() {
@@ -305,6 +315,7 @@ public class CmakeOptionsEditor extends EditorPart {
 			}
 		};
 		addBuildTypeAction.setToolTipText("Add a new build type section");
+		form.getToolBarManager().add(dumpAction);
 		form.getToolBarManager().add(addBuildTypeAction);
 		form.updateToolBar();
 		Composite body = form.getBody();

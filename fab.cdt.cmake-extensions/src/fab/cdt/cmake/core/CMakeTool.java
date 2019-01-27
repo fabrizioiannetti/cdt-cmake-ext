@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CMakeTool {
+	
 	public String getVersion() {
 		String[] version = {""};
 		List<String> cmakeResult = runShortCMake("--version");

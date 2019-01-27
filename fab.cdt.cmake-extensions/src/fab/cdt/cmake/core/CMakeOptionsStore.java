@@ -69,26 +69,7 @@ public class CMakeOptionsStore {
 	}
 
 	public boolean isChanged() {
-		return !isEqual(originalOptions.topLevelCMake, options.topLevelCMake) ||
-				!isEqual(originalOptions.binaryDir, options.binaryDir) ||
-				!isEqual(originalOptions.toolchainFile, options.toolchainFile) ||
-				!isEqual(originalOptions.cmakeArgs, options.cmakeArgs) ||
-				!isEqual(originalOptions.buildTypes, options.buildTypes);
-	}
-
-	private static boolean isEqual(Object a, Object b) {
-		if (a instanceof CMakeBuildTypeOptions[] && a instanceof CMakeBuildTypeOptions[]) {
-			CMakeBuildTypeOptions[] aa = (CMakeBuildTypeOptions[]) a;
-			CMakeBuildTypeOptions[] bb = (CMakeBuildTypeOptions[]) b;
-			if (aa.length != bb.length)
-				return false;
-			for (int i = 0; i < aa.length; i++) {
-				if (!isEqual(aa[i].buildType, bb[i].buildType) || !isEqual(aa[i].cmakeArgs, bb[i].cmakeArgs))
-					return false;
-			}
-			return true;
-		}
-		return (a == b) || (a != null && a.equals(b));
+		return !options.equals(originalOptions);
 	}
 
 	private CMakeOptions getDefault() {
@@ -132,8 +113,23 @@ public class CMakeOptionsStore {
 
 	public void execute(Consumer<CMakeOptions> executor) {
 		executor.accept(options);
-		if (isChanged())
-			changeObserver.accept(options);
+		changeObserver.accept(options);
 	}
 
+	public void dump() {
+		try {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			System.out.println("--------------------------");
+			System.out.println("--- Working Copy:");
+			gson.toJson(options, System.out);
+			System.out.println("--------------------------");
+			System.out.println("--- Original:");
+			gson.toJson(originalOptions, System.out);
+			System.out.println("Changed=" + isChanged());
+			System.out.println("--------------------------");
+		} catch (JsonIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
