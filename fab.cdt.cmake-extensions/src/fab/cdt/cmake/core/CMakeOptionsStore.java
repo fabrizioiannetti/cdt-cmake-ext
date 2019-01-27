@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
@@ -113,7 +114,7 @@ public class CMakeOptionsStore {
 
 	public void save(Path optionsPath) {
 		try (FileWriter writer = new FileWriter(optionsPath.toFile())) {
-			Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			gson.toJson(options, writer);
 			commit();
 		} catch (JsonIOException | IOException e) {
