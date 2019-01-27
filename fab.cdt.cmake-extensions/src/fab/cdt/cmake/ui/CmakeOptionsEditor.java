@@ -38,6 +38,7 @@ import fab.cdt.cmake.core.CMakeBuildTypeOptions;
 import fab.cdt.cmake.core.CMakeOptions;
 import fab.cdt.cmake.core.CMakeOptionsModel;
 import fab.cdt.cmake.core.CMakeOptionsStore;
+import fab.cdt.cmake.core.CMakeTool;
 
 public class CmakeOptionsEditor extends EditorPart {
 
@@ -128,26 +129,45 @@ public class CmakeOptionsEditor extends EditorPart {
 		return false;
 	}
 
-	private Text createTextField(FormToolkit toolkit, Composite sectionClient, String label, String text) {
-		return createTextField(toolkit, sectionClient, label, text, true);
+	private Text createPathField(FormToolkit toolkit, Composite sectionClient, String label, String path, String optPath) {
+		return createTextField(toolkit, sectionClient, label, path, true, optPath);
 	}
 
-	private Text createTextField(FormToolkit toolkit, Composite sectionClient, String label, String text, boolean editable) {
-		int textHSpan = 2;
+	private Text createTextField(FormToolkit toolkit, Composite sectionClient, String label, String text, String optPath) {
+		return createTextField(toolkit, sectionClient, label, text, true, optPath);
+	}
+
+	private Text createTextField(FormToolkit toolkit, Composite sectionClient, String label, String text, boolean editable, String optPath) {
+		int textHSpan = ((GridLayout)sectionClient.getLayout()).numColumns;
 		if (label != null) {
 			Label labelControl = toolkit.createLabel(sectionClient, label);
 			labelControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 			textHSpan--;
 		}
+		if (text == null)
+			text = "";
 		Text textControl = toolkit.createText(sectionClient, text);
 		textControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, textHSpan, 1));
+		if (optPath != null) {
+			textControl.setData("opt_path", optPath);
+			textControl.addModifyListener(new ModifyListener() {
+				@Override
+				public void modifyText(ModifyEvent e) {
+					if (!textControl.isDisposed()) {
+						String optPath = (String) textControl.getData("opt_path");
+						store.execute(options -> options.set(optPath, textControl.getText()));
+					}
+				}
+			});
+		}
 		if (!editable)
 			textControl.setEditable(editable);
 		return textControl;
 	}
 
-	private void createBuildTypeGroup(FormToolkit toolkit, Composite parent, int hspan, CMakeOptions options, CMakeBuildTypeOptions buildTypeOptions) {
+	private void createBuildTypeGroup(FormToolkit toolkit, Composite parent, int hspan, CMakeOptions options, int buildTypeIndex) {
 		Section section = toolkit.createSection(parent, Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE);
+		CMakeBuildTypeOptions buildTypeOptions = options.buildTypes[buildTypeIndex];
 		buildTypeSections.put(buildTypeOptions.buildType, section);
 		section.setData("build-type", buildTypeOptions.buildType);
 		
@@ -157,15 +177,19 @@ public class CmakeOptionsEditor extends EditorPart {
 		toolBarManager.add(new RemoveBuildTypeAction(buildTypeOptions.buildType));
 		toolBarManager.update(true); 
 		section.setTextClient(toolBar);
+
+		// set up section client
 		section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, hspan, 1));
 		section.setText(buildTypeOptions.buildType);
 		Composite client = toolkit.createComposite(section);
 		client.setLayout(new GridLayout(2, false));
 		section.setClient(client);
+
+		// add fields
 		String buildBase = computeBuildDirForBuildType(options, buildTypeOptions.buildType);
-		Text buildDirControl = createTextField(toolkit, client, "Builds in:", buildBase, false);
+		Text buildDirControl = createTextField(toolkit, client, "Builds in:", buildBase, false, "");
 		buildDirControl.setData("build_dir");
-		createTextField(toolkit, client, "Additional CMake args:", buildTypeOptions.cmakeArgs);
+		createTextField(toolkit, client, "Additional CMake args:", buildTypeOptions.cmakeArgs, "buildTypes[" + buildTypeIndex + "]/cmakeArgs");
 		toolkit.paintBordersFor(client);
 	}
 
@@ -260,12 +284,20 @@ public class CmakeOptionsEditor extends EditorPart {
 		return retVal;
 	}
 
+	private static String getCMakeVersion() {
+		String version = new CMakeTool().getVersion();
+		if (version.isEmpty())
+			version = "?";
+		return version;
+	}
+	
 	@Override
 	public void createPartControl(Composite parent) {
+		String cMakeVersion = getCMakeVersion();
 		toolkit = new FormToolkit(parent.getDisplay());
 		form = toolkit.createScrolledForm(parent);
 		toolkit.decorateFormHeading(form.getForm());
-		form.setText("CMake Options");
+		form.setText("CMake Options (cmake " + cMakeVersion + ")");
 		Action addBuildTypeAction = new Action("+") {
 			@Override
 			public void run() {
@@ -276,16 +308,12 @@ public class CmakeOptionsEditor extends EditorPart {
 		form.getToolBarManager().add(addBuildTypeAction);
 		form.updateToolBar();
 		Composite body = form.getBody();
-		body.setLayout(new GridLayout(2, false));
+		body.setLayout(new GridLayout(3, false));
 		store.execute((CMakeOptions options) -> {
-			createTextField(toolkit, body, "Root CMakeLists.txt:",
-					options.topLevelCMake != null ? options.topLevelCMake.toString() : "");
-			buildFolderTextControl = createTextField(toolkit, body, "Build folder:",
-					options.binaryDir != null ? options.binaryDir.toString() : "");
-			createTextField(toolkit, body, "Toolchain file:",
-					options.toolchainFile != null ? options.toolchainFile.toString() : "");
-			createTextField(toolkit, body, "CMake args:",
-					options.cmakeArgs != null ? options.cmakeArgs : "");
+			createPathField(toolkit, body, "Root CMakeLists.txt:",	options.topLevelCMake, "topLevelCMake");
+			buildFolderTextControl = createPathField(toolkit, body, "Build folder:", options.binaryDir, "binaryDir");
+			createPathField(toolkit, body, "Toolchain file:", options.toolchainFile, "toolchainFile");
+			createTextField(toolkit, body, "CMake args:", options.cmakeArgs, "cmakeArgs");
 
 			createAllBuildTypeGroups(options);
 		});
@@ -317,8 +345,8 @@ public class CmakeOptionsEditor extends EditorPart {
 	private void createAllBuildTypeGroups(CMakeOptions options) {
 		Composite body = form.getBody();
 		if (options != null && options.buildTypes != null)
-			for (CMakeBuildTypeOptions buildTypeOptions : options.buildTypes) {
-				createBuildTypeGroup(toolkit, body, 2, options, buildTypeOptions);
+			for (int i = 0; i < options.buildTypes.length; i++) {
+				createBuildTypeGroup(toolkit, body, 3, options, i);
 			}
 	}
 
@@ -360,7 +388,8 @@ public class CmakeOptionsEditor extends EditorPart {
 
 	@Override
 	public void dispose() {
-		toolkit.dispose();
+		if (toolkit != null)
+			toolkit.dispose();
 		super.dispose();
 	}
 }
