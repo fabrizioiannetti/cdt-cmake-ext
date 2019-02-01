@@ -34,6 +34,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.EditorPart;
 
+import fab.cdt.cmake.core.Activator;
 import fab.cdt.cmake.core.CMakeBuildTypeOptions;
 import fab.cdt.cmake.core.CMakeOptions;
 import fab.cdt.cmake.core.CMakeOptionsModel;
@@ -46,7 +47,7 @@ public class CmakeOptionsEditor extends EditorPart {
 		private final String buildType;
 
 		private RemoveBuildTypeAction(String buildType) {
-			super("-");
+			super(null, Activator.getImage("icons/remove.png"));
 			setToolTipText("Remove this build type section");
 			this.buildType = buildType;
 		}
@@ -141,13 +142,17 @@ public class CmakeOptionsEditor extends EditorPart {
 		int textHSpan = ((GridLayout)sectionClient.getLayout()).numColumns;
 		if (label != null) {
 			Label labelControl = toolkit.createLabel(sectionClient, label);
-			labelControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+			GridData layoutData = new GridData(SWT.FILL, SWT.FILL, false, false);
+			layoutData.minimumHeight = 20;
+			labelControl.setLayoutData(layoutData);
 			textHSpan--;
 		}
 		if (text == null)
 			text = "";
 		Text textControl = toolkit.createText(sectionClient, text);
-		textControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, textHSpan, 1));
+		GridData layoutData = new GridData(SWT.FILL, SWT.FILL, true, false, textHSpan, 1);
+		layoutData.heightHint = 20;
+		textControl.setLayoutData(layoutData);
 		if (optPath != null) {
 			textControl.setData("opt_path", optPath);
 			textControl.addModifyListener(new ModifyListener() {
@@ -175,6 +180,8 @@ public class CmakeOptionsEditor extends EditorPart {
 		ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT);
 		ToolBar toolBar = toolBarManager.createControl(section);
 		toolBarManager.add(new RemoveBuildTypeAction(buildTypeOptions.buildType));
+		Action configAction = new Action(null, Activator.getImage("icons/build_16.png")) {};
+		toolBarManager.add(configAction);
 		toolBarManager.update(true); 
 		section.setTextClient(toolBar);
 
@@ -190,7 +197,7 @@ public class CmakeOptionsEditor extends EditorPart {
 		Text buildDirControl = createTextField(toolkit, client, "Builds in:", buildBase, false, null);
 		buildDirControl.setData("build_dir");
 		createTextField(toolkit, client, "Additional CMake args:", buildTypeOptions.cmakeArgs, "buildTypes[" + buildTypeOptions.buildType + "]/cmakeArgs");
-		toolkit.paintBordersFor(client);
+		//toolkit.paintBordersFor(client);
 	}
 
 	private String computeBuildDirForBuildType(CMakeOptions options, String buildType) {
@@ -319,7 +326,9 @@ public class CmakeOptionsEditor extends EditorPart {
 		form.getToolBarManager().add(addBuildTypeAction);
 		form.updateToolBar();
 		Composite body = form.getBody();
-		body.setLayout(new GridLayout(3, false));
+		GridLayout bodyLayout = new GridLayout(3, false);
+		bodyLayout.verticalSpacing = 8;
+		body.setLayout(bodyLayout);
 		store.execute((CMakeOptions options) -> {
 			createPathField(toolkit, body, "Root CMakeLists.txt:",	options.topLevelCMake, "topLevelCMake");
 			buildFolderTextControl = createPathField(toolkit, body, "Build folder:", options.binaryDir, "binaryDir");

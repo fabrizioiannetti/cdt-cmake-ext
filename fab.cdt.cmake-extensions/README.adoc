@@ -1,7 +1,11 @@
 = CMake extensions for CDT =
 
-CDT supports CMake project by providing a specific C/C++ project type.
-Unfortunately the UI to 
+Additional CMake related functionality for Eclipse CDT.
+
+CDT supports CMake by providing a specific C/C++ project type
+that extends the new core build system with a configuration provider
+and a very simple property page in the build configuration dialog
+offered by the `launch bar`.
 
 == The cmakeopts.json file format ==
 
