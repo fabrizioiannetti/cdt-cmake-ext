@@ -49,6 +49,11 @@ public class CMakeOptionsStore {
 		}
 		originalOptions = opts.orElse(getDefault());
 		options = cloneOptions(originalOptions);
+		// just for compatibility : name field added
+		for (CMakeBuildTypeOptions buildTypeOptions : options.buildTypes) {
+			if (buildTypeOptions.name == null)
+				buildTypeOptions.name = buildTypeOptions.buildType;
+		}
 	}
 
 	private CMakeOptions cloneOptions(final CMakeOptions opts) {
@@ -61,6 +66,7 @@ public class CMakeOptionsStore {
 		int i = 0;
 		for (CMakeBuildTypeOptions btOpts : opts.buildTypes) {
 			CMakeBuildTypeOptions bto = new CMakeBuildTypeOptions();
+			bto.name = btOpts.name;
 			bto.buildType = btOpts.buildType;
 			bto.cmakeArgs = btOpts.cmakeArgs;
 			cloned.buildTypes[i++] = bto;
@@ -76,17 +82,10 @@ public class CMakeOptionsStore {
 		CMakeOptions options = new CMakeOptions();
 		options.buildTypes = new CMakeBuildTypeOptions[1];
 		options.buildTypes[0] = new CMakeBuildTypeOptions();
+		options.buildTypes[0].name = "Default";
 		options.buildTypes[0].buildType = "Default";
 		options.buildTypes[0].cmakeArgs = "";
 		return options;
-	}
-
-	public void resetToDefault() {
-		options = new CMakeOptions();
-		options.buildTypes = new CMakeBuildTypeOptions[1];
-		options.buildTypes[0] = new CMakeBuildTypeOptions();
-		options.buildTypes[0].buildType = "Default";
-		options.buildTypes[0].cmakeArgs = "";
 	}
 
 	private void commit() {

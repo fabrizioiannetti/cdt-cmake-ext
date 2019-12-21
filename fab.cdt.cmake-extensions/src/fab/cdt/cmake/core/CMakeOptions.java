@@ -89,7 +89,9 @@ public class CMakeOptions {
 		if (aa == null || bb == null || aa.length != bb.length)
 			return false;
 		for (int i = 0; i < aa.length; i++) {
-			if (!isEqual(aa[i].buildType, bb[i].buildType) || !isEqual(aa[i].cmakeArgs, bb[i].cmakeArgs))
+			if (!isEqual(aa[i].buildType, bb[i].buildType) ||
+					!isEqual(aa[i].name, bb[i].name) ||
+					!isEqual(aa[i].cmakeArgs, bb[i].cmakeArgs))
 				return false;
 		}
 		return true;

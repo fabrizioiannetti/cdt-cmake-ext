@@ -2,18 +2,16 @@ package fab.cdt.cmake.ui;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -43,18 +41,18 @@ import fab.cdt.cmake.core.CMakeTool;
 
 public class CmakeOptionsEditor extends EditorPart {
 
-	private final class RemoveBuildTypeAction extends Action {
+	private final class RemoveConfigurationAction extends Action {
 		private final String buildType;
 
-		private RemoveBuildTypeAction(String buildType) {
+		private RemoveConfigurationAction(String buildType) {
 			super(null, Activator.getImage("icons/remove.png"));
-			setToolTipText("Remove this build type section");
+			setToolTipText("Remove this Configuration");
 			this.buildType = buildType;
 		}
 
 		@Override
 		public void run() {
-			removeBuildTypeSection(buildType);
+			removeConfigurationSection(buildType);
 			store.execute((CMakeOptions options) -> {
 				CMakeBuildTypeOptions[] newBuildTypes = new CMakeBuildTypeOptions[options.buildTypes.length - 1];
 				for (int i = 0, j = 0; i < options.buildTypes.length; i++) {
@@ -73,8 +71,9 @@ public class CmakeOptionsEditor extends EditorPart {
 	private CMakeOptionsStore store;
 
 	// map buildType (name) -> Section in form
-	private Map<String, Section> buildTypeSections= new HashMap<>();
+	private Map<String, Section> configurationSections= new HashMap<>();
 	private Text buildFolderTextControl;
+	private IProject project;
 
 	public CmakeOptionsEditor() {
 	}
@@ -114,6 +113,10 @@ public class CmakeOptionsEditor extends EditorPart {
 			});
 			setPartName(optionsFile.getName());
 			setContentDescription(optionsFile.getPath());
+			IFile[] ifiles = org.eclipse.core.resources.ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(uri, 0);
+			if (ifiles != null && ifiles.length > 0) {
+				project = ifiles[0].getProject();
+			}
 		}
 		if (optionsFile == null) {
 			throw new PartInitException("Could not read input:" + input.getName());
@@ -170,57 +173,41 @@ public class CmakeOptionsEditor extends EditorPart {
 		return textControl;
 	}
 
-	private void createBuildTypeGroup(FormToolkit toolkit, Composite parent, int hspan, CMakeOptions options, int buildTypeIndex) {
+	private void createConfigurationGroup(FormToolkit toolkit, Composite parent, int hspan, CMakeOptions options, int buildTypeIndex) {
 		Section section = toolkit.createSection(parent, Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE);
 		CMakeBuildTypeOptions buildTypeOptions = options.buildTypes[buildTypeIndex];
-		buildTypeSections.put(buildTypeOptions.buildType, section);
-		section.setData("build-type", buildTypeOptions.buildType);
+		configurationSections.put(buildTypeOptions.name, section);
 		
 		// add toolbar with actions
 		ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT);
 		ToolBar toolBar = toolBarManager.createControl(section);
-		toolBarManager.add(new RemoveBuildTypeAction(buildTypeOptions.buildType));
-		Action configAction = new Action(null, Activator.getImage("icons/build_16.png")) {};
+		toolBarManager.add(new RemoveConfigurationAction(buildTypeOptions.name));
+		Action configAction = new BuildAction(store, buildTypeOptions.name, project);
 		toolBarManager.add(configAction);
 		toolBarManager.update(true); 
 		section.setTextClient(toolBar);
 
 		// set up section client
 		section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, hspan, 1));
-		section.setText(buildTypeOptions.buildType);
+		section.setText(buildTypeOptions.name + " (" + buildTypeOptions.buildType + ")");
 		Composite client = toolkit.createComposite(section);
 		client.setLayout(new GridLayout(2, false));
 		section.setClient(client);
 
 		// add fields
-		String buildBase = computeBuildDirForBuildType(options, buildTypeOptions.buildType);
+		String buildBase = computeBuildDirForConfig(options, buildTypeOptions.name);
 		Text buildDirControl = createTextField(toolkit, client, "Builds in:", buildBase, false, null);
 		buildDirControl.setData("build_dir");
 		createTextField(toolkit, client, "Additional CMake args:", buildTypeOptions.cmakeArgs, "buildTypes[" + buildTypeOptions.buildType + "]/cmakeArgs");
 		//toolkit.paintBordersFor(client);
 	}
 
-	private String computeBuildDirForBuildType(CMakeOptions options, String buildType) {
-		return (options.binaryDir == null ? "" : (options.binaryDir.toString() + "/")) + buildType.toLowerCase();
+	private String computeBuildDirForConfig(CMakeOptions options, String configName) {
+		return (options.binaryDir == null ? "" : (options.binaryDir.toString() + "/")) + configName.toLowerCase();
 	}
 
 	private void openAddBuildTypeDialog() {
-		ListDialog dialog = new ListDialog(getSite().getShell());
-		dialog.setTitle("Add Build Type");
-		dialog.setMessage("Select a new Build Type to add");
-		List<String> buildTypes = new ArrayList<>(Arrays.asList("Default", "Debug", "Release"));
-		// remove build types that are already created and add the custom placeholder
-		store.execute((CMakeOptions options) -> {
-			for (CMakeBuildTypeOptions buildTypeOptions : options.buildTypes) {
-				if (buildTypes.contains(buildTypeOptions.buildType))
-					buildTypes.remove(buildTypeOptions.buildType);
-			}
-		});
-		buildTypes.add("-- Custom --");
-		
-		dialog.setContentProvider(new ArrayContentProvider());
-		dialog.setLabelProvider(new LabelProvider());
-		dialog.setInput(buildTypes);
+		NewBuildTypeDialog dialog = new NewBuildTypeDialog(getSite().getShell());
 		dialog.setBlockOnOpen(true);
 		if (dialog.open() == ListDialog.OK) {
 			Object[] objects = dialog.getResult();
@@ -231,7 +218,7 @@ public class CmakeOptionsEditor extends EditorPart {
 						buildType = openCustomBuildTypeDialog();
 					}
 					if (buildTypeIsValid(buildType)) {
-						addBuildType(buildType);
+						addBuildType(dialog.getConfigName(), buildType);
 						updateBuildTypeGroups();
 					}
 				}
@@ -268,12 +255,13 @@ public class CmakeOptionsEditor extends EditorPart {
 	}
 
 	
-	private void addBuildType(String buildType) {
+	private void addBuildType(String name, String buildType) {
 		store.execute((CMakeOptions options) -> {
 			CMakeBuildTypeOptions buildTypeOptions = getBuildTypeOptions(options,buildType);
 			if (buildTypeOptions == null) {
 				CMakeBuildTypeOptions[] newBuildTypes = Arrays.copyOf(options.buildTypes, options.buildTypes.length + 1);
 				CMakeBuildTypeOptions newBuildTypeOptions = new CMakeBuildTypeOptions();
+				newBuildTypeOptions.name = name;
 				newBuildTypeOptions.buildType = buildType;
 				newBuildTypeOptions.cmakeArgs = "";
 				newBuildTypes[options.buildTypes.length] = newBuildTypeOptions;
@@ -344,8 +332,8 @@ public class CmakeOptionsEditor extends EditorPart {
 			public void modifyText(ModifyEvent e) {
 				Text widget = (Text) e.widget;
 				String text = widget.getText();
-				for (String buildType : buildTypeSections.keySet()) {
-					Section section = buildTypeSections.get(buildType);
+				for (String configName : configurationSections.keySet()) {
+					Section section = configurationSections.get(configName);
 					Composite client = (Composite) section.getClient();
 					Control[] children = client.getChildren();
 					for (Control control : children) {
@@ -353,7 +341,7 @@ public class CmakeOptionsEditor extends EditorPart {
 							Text textWidget = (Text) control;
 							Object data = textWidget.getData();
 							if ("build_dir".equals(data)) {
-								textWidget.setText(text + "/" + buildType);
+								textWidget.setText(text + "/" + configName);
 							}
 						}
 					}
@@ -366,7 +354,7 @@ public class CmakeOptionsEditor extends EditorPart {
 		Composite body = form.getBody();
 		if (options != null && options.buildTypes != null)
 			for (int i = 0; i < options.buildTypes.length; i++) {
-				createBuildTypeGroup(toolkit, body, 3, options, i);
+				createConfigurationGroup(toolkit, body, 3, options, i);
 			}
 	}
 
@@ -377,12 +365,12 @@ public class CmakeOptionsEditor extends EditorPart {
 			if (control instanceof Section)
 				control.dispose();
 		}
-		buildTypeSections.clear();
+		configurationSections.clear();
 	}
 
-	private void removeBuildTypeSection(String buildType) {
+	private void removeConfigurationSection(String name) {
 		Composite body = form.getBody();
-		Section section = buildTypeSections.remove(buildType);
+		Section section = configurationSections.remove(name);
 		if (section != null) {
 			section.dispose();
 		}

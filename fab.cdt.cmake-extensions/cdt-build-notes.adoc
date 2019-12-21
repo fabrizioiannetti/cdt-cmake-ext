@@ -1,0 +1,43 @@
+= Notes on CDT build system =
+
+Notes to understand the behavior of the CDT `core.build` system. 
+
+== Basics ==
+
+The CDT `core.build` framework is based on the `CBuildConfiguration` class.
+
+The class defines a settings node in:
+
+----
+<EclipseInstance>/org.eclipse.cdt.core/config/<project>/<config>/
+----
+
+which means settings for a given pair `(project, config)` is stored in the eclipse instance
+causing the following *drawbacks*:
+
+* different eclipse instances (may) have different settings
+* other people cloning the project will not see these settings.
+
+The settings are read during instantiation
+
+== CMakeBuildConfiguration ==
+
+The CMake configuration defines the following properties stored in the preferences
+
+|===
+| variable in code | property key          | description
+|`CMAKE_GENERATOR` | `cmake.generator`     | the generator to be used: `Ninja` (default) or `Make` are supported
+|`CMAKE_ARGUMENTS` | `cmake.arguments`     | arguments to pass to cmake during build
+|`CMAKE_ENV`       | `cmake.environment`   | environment variables in form of a sequence of `key=value` pairs, space separated, value can be enclosed by quotes (`"`) 
+|`BUILD_COMMAND`   | `cmake.command.build` | the command used to build, by default `cmake --build .`, with additional `-- -v` for ninja
+|`CLEAN_COMMAND`   | `cmake.command.clean` | command to clean, by default `ninja clean` if the generator is ninja, `make clean` otherwise
+|===
+
+* *Note:* the `-v` verbose options added to the ninja build by default is probably obsolete as it seems targeted at parsing the compile commands, but CMake actually generates a `compile_commands.json` file to parse in place of the compiler output.
+
+== CMake build command parsing ==
+
+The CMake command is called with `CMAKE_EXPORT_COMPILE_COMMANDS=ON`, so that during configuration the
+`compile_commands.json` is written.
+The CDT index is built calling the GCC compiler output parser on each of these commands.
+

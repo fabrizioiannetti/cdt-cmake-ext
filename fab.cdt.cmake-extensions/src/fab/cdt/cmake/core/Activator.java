@@ -5,10 +5,9 @@ import java.io.IOException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 public class Activator extends AbstractUIPlugin {
 	private static final String ID = "fab.cdt.cmake-extensions";
@@ -41,6 +40,19 @@ public class Activator extends AbstractUIPlugin {
 
 	public static IStatus errorStatus(String format, IOException e) {
 		return new Status(IStatus.ERROR, getId(), format, e);
+	}
+
+	/**
+	 * Return the OSGi service with the given service interface.
+	 * 
+	 * @param service
+	 *            service interface
+	 * @return the specified service or null if it's not registered
+	 */
+	public static <T> T getService(Class<T> service) {
+		BundleContext context = plugin.getBundle().getBundleContext();
+		ServiceReference<T> ref = context.getServiceReference(service);
+		return ref != null ? context.getService(ref) : null;
 	}
 
 }
