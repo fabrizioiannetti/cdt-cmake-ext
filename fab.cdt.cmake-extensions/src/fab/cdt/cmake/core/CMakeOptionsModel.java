@@ -31,32 +31,23 @@ public class CMakeOptionsModel {
 		loadOptionsFile(optionsFile);
 	}
 
-	public void save() {
-		try (FileWriter writer = new FileWriter(optionsPath.toFile())) {
-			Gson gson = new Gson();
-			gson.toJson(options, writer);
-		} catch (JsonIOException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 	public CMakeOptions getOptionsFile(IProgressMonitor monitor) {
 		if (options == null)
 				loadOptionsFile(cmakeRoot.resolve(CMAKEOPTS_JSON));
 		return options;
 	}
 
-	public HashMap<String, CompileCommand> getCompileCommands(CMakeBuildTypeOptions optionsConfig) {
+	public HashMap<String, CompileCommand> getCompileCommands(CMakeBuildConfigurationOptions optionsConfig) {
 		return compileCommands;
 	}
 
 	private void initializeWithDefault() {
 		options = new CMakeOptions();
-		options.buildTypes = new CMakeBuildTypeOptions[1];
-		options.buildTypes[0] = new CMakeBuildTypeOptions();
-		options.buildTypes[0].buildType = "Default";
-		options.buildTypes[0].cmakeArgs = "";
+		options.buildConfigurations = new CMakeBuildConfigurationOptions[1];
+		options.buildConfigurations[0] = new CMakeBuildConfigurationOptions();
+		options.buildConfigurations[0].name = "Default";
+		options.buildConfigurations[0].buildType = "Debug";
+		options.buildConfigurations[0].cmakeArgs = "";
 	}
 	private void loadOptionsFile(Path optionsPath) {
 		if (Files.exists(optionsPath)) {
@@ -72,8 +63,8 @@ public class CMakeOptionsModel {
 //				throw new CoreException(Activator.errorStatus(
 //						String.format("Reading CMake Options file %s", optionsFile), e));
 				} catch (JsonSyntaxException e) {
-					// the file is not valid, what to do??
-					// the file is be empty     -> generate default options
+					// TODO: the file is not valid, what to do??
+					// the file is empty           -> generate default options
 					// the file has a syntax error -> ??
 				}
 				

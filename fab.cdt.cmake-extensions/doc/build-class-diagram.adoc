@@ -1,0 +1,5 @@
+= Class diagram of cdt.core build =
+
+An incomplete class diagram of the core build system, with some annotations
+
+image::cdt-core-build.png[cdt-core-build.png]

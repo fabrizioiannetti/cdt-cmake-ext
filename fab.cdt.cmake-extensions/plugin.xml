@@ -4,12 +4,12 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="fab.cdt.cmake.ui.CmakeOptionsEditor"
+            class="fab.cdt.cmake.ui.CmakeConfigurationsEditor"
             default="true"
-            filenames="cmakeopts.json"
+            filenames="cmakeconfigs.json"
             icon="icons/CMakeLogo.gif"
             id="fab.cdt.cmake-extensions.cmakeOptionsEditor"
-            name="CMake options">
+            name="CMake Configurations">
       </editor>
    </extension>
 

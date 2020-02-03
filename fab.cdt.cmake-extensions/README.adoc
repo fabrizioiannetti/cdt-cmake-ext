@@ -7,7 +7,7 @@ that extends the new core build system with a configuration provider
 and a very simple property page in the build configuration dialog
 offered by the `launch bar`.
 
-link:cdt-build-notes.adoc[Here are some notes] on the CDT `core.build`, with specifics for `cmake`
+link:doc/cdt-build-notes.adoc[Here are some notes] on the CDT `core.build`, with specifics for `cmake`
 
 == The cmakeopts.json file format ==
 
@@ -15,7 +15,7 @@ This is a configuration file used to describe how to call `cmake`:
 
 * define the top-level `CMakeLists.txt`
 * define the build directory
-* list build types (`Debug`, `Release`, ...) and for each one the parameters list
+* list build configurations and for each one the parameters list
 
 Example:
 
@@ -24,12 +24,14 @@ Example:
   rootCMakeLists : "path/to/CMakeLists.txt",
   buildDirectory : "path/to/build"
   generator: "Ninja",
-  buildTypes: [
+  buildConfigurations: [
     {
+      name: "config_1",
       type : "Debug",
       cmakeArgs : ""
     },
     {
+      name: "config_2",
       type : "Release",
       cmakeArgs : ""
     },

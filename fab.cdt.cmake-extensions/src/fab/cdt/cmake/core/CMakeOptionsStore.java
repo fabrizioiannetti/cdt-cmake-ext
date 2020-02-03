@@ -40,8 +40,8 @@ public class CMakeOptionsStore {
 				} catch (IOException e) {
 //				TODO: log
 				} catch (JsonSyntaxException e) {
-					// the file is not valid, what to do??
-					// the file is  empty     -> generate default options
+					// TODO: the file is not valid, what to do??
+					// the file is empty           -> generate default options
 					// the file has a syntax error -> ??
 				}
 				
@@ -50,7 +50,7 @@ public class CMakeOptionsStore {
 		originalOptions = opts.orElse(getDefault());
 		options = cloneOptions(originalOptions);
 		// just for compatibility : name field added
-		for (CMakeBuildTypeOptions buildTypeOptions : options.buildTypes) {
+		for (CMakeBuildConfigurationOptions buildTypeOptions : options.buildConfigurations) {
 			if (buildTypeOptions.name == null)
 				buildTypeOptions.name = buildTypeOptions.buildType;
 		}
@@ -60,16 +60,16 @@ public class CMakeOptionsStore {
 		CMakeOptions cloned = new CMakeOptions();
 		cloned.topLevelCMake = opts.topLevelCMake;
 		cloned.binaryDir = opts.binaryDir;
-		cloned.toolchainFile = opts.toolchainFile;
 		cloned.cmakeArgs = opts.cmakeArgs;
-		cloned.buildTypes = new CMakeBuildTypeOptions[opts.buildTypes.length];
+		cloned.buildConfigurations = new CMakeBuildConfigurationOptions[opts.buildConfigurations.length];
 		int i = 0;
-		for (CMakeBuildTypeOptions btOpts : opts.buildTypes) {
-			CMakeBuildTypeOptions bto = new CMakeBuildTypeOptions();
+		for (CMakeBuildConfigurationOptions btOpts : opts.buildConfigurations) {
+			CMakeBuildConfigurationOptions bto = new CMakeBuildConfigurationOptions();
 			bto.name = btOpts.name;
 			bto.buildType = btOpts.buildType;
+			bto.toolchainFile = btOpts.toolchainFile;
 			bto.cmakeArgs = btOpts.cmakeArgs;
-			cloned.buildTypes[i++] = bto;
+			cloned.buildConfigurations[i++] = bto;
 		}
 		return cloned;
 	}
@@ -80,11 +80,11 @@ public class CMakeOptionsStore {
 
 	private CMakeOptions getDefault() {
 		CMakeOptions options = new CMakeOptions();
-		options.buildTypes = new CMakeBuildTypeOptions[1];
-		options.buildTypes[0] = new CMakeBuildTypeOptions();
-		options.buildTypes[0].name = "Default";
-		options.buildTypes[0].buildType = "Default";
-		options.buildTypes[0].cmakeArgs = "";
+		options.buildConfigurations = new CMakeBuildConfigurationOptions[1];
+		options.buildConfigurations[0] = new CMakeBuildConfigurationOptions();
+		options.buildConfigurations[0].name = "Default";
+		options.buildConfigurations[0].buildType = "Default";
+		options.buildConfigurations[0].cmakeArgs = "";
 		return options;
 	}
 
@@ -103,6 +103,11 @@ public class CMakeOptionsStore {
 		}
 	}
 
+	/**
+	 * Set the observer to be called upon options changes.
+	 * 
+	 * @param changeObserver the observer function.
+	 */
 	public void onChanged(Consumer<CMakeOptions> changeObserver) {
 		if (changeObserver != null)
 			this.changeObserver  = changeObserver;
@@ -110,6 +115,16 @@ public class CMakeOptionsStore {
 			this.changeObserver  = (CMakeOptions options) -> {};
 	}
 
+	/**
+	 * Execute an action to manipulate the cmake options,
+	 * after the executor is done a change event is fired if
+	 * the configuration has been changed.
+	 * 
+	 * The options object should always be accessed via this
+	 * method to ensure change notifications are propagated.
+	 * 
+	 * @param executor a consumer gaining access to the options.
+	 */
 	public void execute(Consumer<CMakeOptions> executor) {
 		executor.accept(options);
 		changeObserver.accept(options);
@@ -130,5 +145,22 @@ public class CMakeOptionsStore {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public String dumpToString() {
+		String dump = "";
+		try {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			dump += ("--- Working Copy ---------\n");
+			dump += gson.toJson(options) + "\n";
+			dump += ("--- Original:-------------\n");
+			dump += gson.toJson(originalOptions) + "\n";
+			dump += ("Changed=" + isChanged());
+			dump += ("--------------------------\n");
+		} catch (JsonIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			dump += e;
+		}
+		return dump;
 	}
 }

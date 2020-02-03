@@ -1,10 +1,12 @@
 package fab.cdt.cmake.core;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ResourceLocator;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -33,8 +35,8 @@ public class Activator extends AbstractUIPlugin {
 			"No Activator ID";
 	}
 
-	public static ImageDescriptor getImage(String key) {
-		ImageDescriptor descriptor = AbstractUIPlugin.imageDescriptorFromPlugin(ID, key);
+	public static Optional<ImageDescriptor> getImage(String key) {
+		Optional<ImageDescriptor> descriptor = ResourceLocator.imageDescriptorFromBundle(ID, key);
 		return descriptor;
 	}
 

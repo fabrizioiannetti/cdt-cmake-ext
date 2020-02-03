@@ -16,15 +16,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ListDialog;
 
-public class NewBuildTypeDialog extends ListDialog {
+public class NewBuildConfigurationDialog extends ListDialog {
 
-	private Text configText;
-	private String configName;
+	private Text configurationNameText;
+	private String configurationName;
 
-	public NewBuildTypeDialog(Shell parent) {
+	public NewBuildConfigurationDialog(Shell parent) {
 		super(parent);
-		setTitle("Add Build Type");
-		setMessage("Select a new Configuration to add");
+		setTitle("Add Build Configuration");
+		setMessage("Select the build type for the new configuration");
 		List<String> buildTypes = new ArrayList<>(Arrays.asList("Default", "Debug", "Release"));
 		// remove build types that are already created and add the custom placeholder
 //		store.execute((CMakeOptions options) -> {
@@ -40,8 +40,8 @@ public class NewBuildTypeDialog extends ListDialog {
 		setInput(buildTypes);
 	}
 	
-	public String getConfigName() {
-		return configName;
+	public String getConfigurationName() {
+		return configurationName;
 	}
 
 	@Override
@@ -49,17 +49,17 @@ public class NewBuildTypeDialog extends ListDialog {
 		Composite dialogArea = (Composite) super.createDialogArea(container);
 		Label label = new Label(dialogArea, SWT.NONE);
 		label.setLayoutData(new GridData(SWT.LEFT, SWT.FILL, false, false));
-		label.setText("Config name:");
-		configText = new Text(dialogArea, SWT.SINGLE | SWT.BORDER);
-		configText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		label.setText("Configuration name:");
+		configurationNameText = new Text(dialogArea, SWT.SINGLE | SWT.BORDER);
+		configurationNameText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		return dialogArea;
 	}
 
 	@Override
 	protected void okPressed() {
-		configName = configText.getText().trim();
+		configurationName = configurationNameText.getText().trim();
 		super.okPressed();
-		if (configName.isEmpty())
+		if (configurationName.isEmpty())
 			setReturnCode(CANCEL);
 	}
 	

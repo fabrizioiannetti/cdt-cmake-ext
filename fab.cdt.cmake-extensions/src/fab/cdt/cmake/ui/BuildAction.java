@@ -14,7 +14,7 @@ final public class BuildAction extends Action {
 	private IProject project;
 
 	public BuildAction(CMakeOptionsStore store, String name, IProject project) {
-		super(null, Activator.getImage("icons/build_16.png"));
+		super(null, Activator.getImage("icons/build_16.png").get());
 		this.store = store;
 		this.configName = name;
 		this.project = project;

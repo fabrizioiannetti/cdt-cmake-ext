@@ -18,3 +18,5 @@ Require-Bundle: org.eclipse.cdt.cmake.core;bundle-version="1.2.1",
  org.eclipse.ui.forms;bundle-version="3.7.200"
 Export-Package: fab.cdt.cmake.core,
  fab.cdt.cmake.ui
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: fab.cdt.cmake.core.Activator

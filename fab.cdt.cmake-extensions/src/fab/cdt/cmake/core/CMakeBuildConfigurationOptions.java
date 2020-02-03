@@ -1,8 +1,9 @@
 package fab.cdt.cmake.core;
 
-public class CMakeBuildTypeOptions {
+public class CMakeBuildConfigurationOptions {
 	public String name;
 	public String buildType;
+	public String toolchainFile;
 	public String cmakeArgs;
 	
 	public String get(String path) {
@@ -11,6 +12,8 @@ public class CMakeBuildTypeOptions {
 			return buildType;
 		case "buildType":
 			return buildType;
+		case "toolchainFile":
+			return toolchainFile;
 		case "cmakeArgs":
 			return cmakeArgs;
 		default:
@@ -26,6 +29,9 @@ public class CMakeBuildTypeOptions {
 			break;
 		case "buildType":
 			buildType = value;
+			break;
+		case "toolchainFile":
+			toolchainFile = value;
 			break;
 		case "cmakeArgs":
 			cmakeArgs = value;

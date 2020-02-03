@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>5</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>625</x>
+      <y>565</y>
+      <w>95</w>
+      <h>85</h>
+    </coordinates>
+    <panel_attributes>IToolchain
+-
++getTypeId()
++getId()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>435</x>
+      <y>565</y>
+      <w>110</w>
+      <h>85</h>
+    </coordinates>
+    <panel_attributes>IToolchainManager
+-
++addToolchain()
++removeToolchain()
++setToolchainOrder()
++getToolChain(typeId, id)
+-</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>540</x>
+      <y>590</y>
+      <w>95</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+toolchains</panel_attributes>
+    <additional_attributes>170.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>460</x>
+      <y>325</y>
+      <w>130</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ICBuildConfiguration
+-
+/+build()/</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>605</x>
+      <y>690</y>
+      <w>145</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>lw=2.0
+IToolchainProvider
+-
++init(manager: IToolchainManager)
++getId()
+-
+style=wordwrap
+Identifier of the source of the toolchain.
+
+May add toolchains to the manager in init()
+
+Subclasses are instantiated via the extension point
+org.eclipse.cdt.core.ToolChainProvider</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>665</x>
+      <y>645</y>
+      <w>20</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1
+</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>490</x>
+      <y>890</y>
+      <w>115</w>
+      <h>55</h>
+    </coordinates>
+    <panel_attributes>ArduinoToolChainProvider
+-
++getId()
+-
+style=wordwrap
+The class does nothing
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>560</x>
+      <y>805</y>
+      <w>125</w>
+      <h>95</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>230.0;10.0;230.0;60.0;10.0;60.0;10.0;170.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>615</x>
+      <y>890</y>
+      <w>115</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>GCCPathToolChainProvider
+-
++init()
++getId()
+-
+style=wordwrap
+init() searches for gcc and clang executables on the system path.
+registers one toolchain per compiler found.
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>670</x>
+      <y>830</y>
+      <w>15</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>740</x>
+      <y>890</y>
+      <w>115</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>Msys2ToolChainProvider
+-
++init()
++getId()
+-
+style=wordwrap
+init() searches for msys2 in the windows registry.
+registers one toolchain per compiler found.
+
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>670</x>
+      <y>830</y>
+      <w>130</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;240.0;10.0;240.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>865</x>
+      <y>890</y>
+      <w>125</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>ContainerGCCToolChainProvider
+-
++init()
++getId()
+-
+style=wordwrap
+init() searches for active docker connections.
+registers one toolchain per connection found.
+Listens to docker connection changes to adjust.
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>785</x>
+      <y>830</y>
+      <w>130</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;240.0;10.0;240.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>435</x>
+      <y>680</y>
+      <w>110</w>
+      <h>85</h>
+    </coordinates>
+    <panel_attributes>ToolchainManager
+-
++addToolchain()
++removeToolchain()
++setToolchainOrder()
++getToolChain(typeId, id)
+-
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>485</x>
+      <y>645</y>
+      <w>15</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>195</x>
+      <y>325</y>
+      <w>130</w>
+      <h>85</h>
+    </coordinates>
+    <panel_attributes>CBuilder
+-
++build(kind, args)
+bg=light_gray
+-
+style=wordwrap
+uses current build config adapted to ICBuildConfiguration and delegate the build to the configuration</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>265</x>
+      <y>605</y>
+      <w>15</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>180</x>
+      <y>225</y>
+      <w>160</w>
+      <h>75</h>
+    </coordinates>
+    <panel_attributes>IncrementalProjectBuilder
+-
+/+build(kind, args)/
++getBuildConfig(): IBuildConfiguration
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>720</x>
+      <y>130</y>
+      <w>220</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>ICBuildconfigurationProvider
+-
+/+createBuildConfiguration(project, toolChain, launchMode)/
+lw=2.0
+
+-
+created via extension point:
+org.eclipse.cdt.core.CBuildConfigProvider</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>455</y>
+      <w>130</w>
+      <h>75</h>
+    </coordinates>
+    <panel_attributes>CBuildConfigAdapterFactory
+-
++adapt()
+bg=light_gray
+-
+style=wordwrap
+Adapts an IBuildConfiguration to ICBuildConfiguration using an ICBuildConfigurationManager</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>205</x>
+      <y>560</y>
+      <w>130</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ICBuildConfigurationManager
+-
++getBuildconfiguration()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>205</x>
+      <y>645</y>
+      <w>130</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>CBuildConfigurationManager
+-
++getBuildconfiguration()
+bg=light_gray
+-
+style=wordwrap
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>265</x>
+      <y>525</y>
+      <w>15</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>145</x>
+      <y>200</y>
+      <w>215</w>
+      <h>220</h>
+    </coordinates>
+    <panel_attributes>Interface to the eclipse build system
+halign=left
+lt=.
+lw=2.0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>255</x>
+      <y>295</y>
+      <w>15</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>520</x>
+      <y>405</y>
+      <w>105</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>CBuildConfiguration
+-
+/+build()/</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>565</x>
+      <y>370</y>
+      <w>15</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>520</x>
+      <y>480</y>
+      <w>105</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ArduinoBuildConfiguration
+-
++build()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>635</x>
+      <y>480</y>
+      <w>110</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>AutotoolsBuildConfiguration
+-
++build()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>555</x>
+      <y>450</y>
+      <w>30</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0;40.0;40.0;40.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>570</x>
+      <y>465</y>
+      <w>140</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;260.0;10.0;260.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>755</x>
+      <y>480</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>CmakeBuildConfiguration
+-
++build()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>695</x>
+      <y>465</y>
+      <w>115</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;210.0;10.0;210.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>865</x>
+      <y>480</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>MesonBuildConfiguration
+-
++build()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>795</x>
+      <y>465</y>
+      <w>115</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;210.0;10.0;210.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>975</x>
+      <y>480</y>
+      <w>100</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>StandardBuildConfiguration
+-
++build()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>895</x>
+      <y>465</y>
+      <w>115</w>
+      <h>25</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;210.0;10.0;210.0;30.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>760</x>
+      <y>210</y>
+      <w>130</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>ArduinoBuildConfigurationProvider
+-
++createBuildConfiguration()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>730</x>
+      <y>190</y>
+      <w>40</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0;60.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>760</x>
+      <y>260</y>
+      <w>130</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>AutotoolsBuildConfigurationProvider
+-
++createBuildConfiguration()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>760</x>
+      <y>310</y>
+      <w>130</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>CmakeBuildConfigurationProvider
+-
++createBuildConfiguration()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>760</x>
+      <y>360</y>
+      <w>130</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>MakefileBuildConfigurationProvider
+-
++createBuildConfiguration()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>760</x>
+      <y>410</y>
+      <w>130</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>MesonBuildConfigurationProvider
+-
++createBuildConfiguration()
+bg=light_gray</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>730</x>
+      <y>225</y>
+      <w>40</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0;60.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>730</x>
+      <y>275</y>
+      <w>40</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0;60.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>730</x>
+      <y>325</y>
+      <w>40</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0;60.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>730</x>
+      <y>375</y>
+      <w>40</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>lt=-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;110.0;60.0;110.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>585</x>
+      <y>170</y>
+      <w>145</w>
+      <h>190</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+instantiates</panel_attributes>
+    <additional_attributes>10.0;360.0;70.0;360.0;70.0;10.0;270.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>320</x>
+      <y>345</y>
+      <w>150</w>
+      <h>20</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+delegates build</panel_attributes>
+    <additional_attributes>280.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>495</x>
+      <y>370</y>
+      <w>160</w>
+      <h>205</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>300.0;390.0;300.0;360.0;10.0;360.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>330</x>
+      <y>365</y>
+      <w>140</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+keeps registry of</panel_attributes>
+    <additional_attributes>260.0;10.0;130.0;10.0;130.0;440.0;10.0;440.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>145</x>
+      <y>435</y>
+      <w>215</w>
+      <h>285</h>
+    </coordinates>
+    <panel_attributes>BuildConfig to
+CBuildConfig
+adapter
+halign=left
+lt=.
+lw=2.0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>115</x>
+      <y>55</y>
+      <w>385</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>*Services provided by cdt core build*
+
+ICMakeToolChainManager toolchainManager = Activator.getService(ICMakeToolChainManager.class);
+ICBuildConfigurationManager configManager = Activator.getService(ICBuildConfigurationManager.class);</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
