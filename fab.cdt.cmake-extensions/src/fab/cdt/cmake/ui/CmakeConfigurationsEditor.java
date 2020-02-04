@@ -2,8 +2,11 @@ package fab.cdt.cmake.ui;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
@@ -11,6 +14,7 @@ import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
@@ -69,6 +73,36 @@ public class CmakeConfigurationsEditor extends EditorPart {
 				}
 				options.buildConfigurations = newBuildConfigurations;
 			});
+		}
+	}
+	private final class SetActiveConfigurationAction extends Action {
+		private final String configurationName;
+
+		private SetActiveConfigurationAction(String configurationName) {
+			super(null, Activator.getImage("icons/configs.png").get());
+			setToolTipText("Set this configuration as active");
+			this.configurationName = configurationName;
+		}
+
+		@Override
+		public void run() {
+			try {
+				IProjectDescription desc = project.getDescription();
+				IBuildConfiguration[] buildConfigs = project.getBuildConfigs();
+				List<String> configNames = new ArrayList<>();
+				for (IBuildConfiguration buildConfiguration : buildConfigs) {
+					configNames.add(buildConfiguration.getName());
+				}
+				if (!configNames.contains(configurationName)) {
+					configNames.add(configurationName);
+					desc.setBuildConfigs(configNames.toArray(new String[configNames.size()]));
+				}
+				desc.setActiveBuildConfig(configurationName);
+				project.setDescription(desc, null);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -179,6 +213,7 @@ public class CmakeConfigurationsEditor extends EditorPart {
 		// add toolbar with actions
 		ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT);
 		ToolBar toolBar = toolBarManager.createControl(section);
+		toolBarManager.add(new SetActiveConfigurationAction(buildConfigurationOptions.name));
 		toolBarManager.add(new RemoveConfigurationAction(buildConfigurationOptions.name));
 		Action configAction = new BuildAction(store, buildConfigurationOptions.name, project);
 		toolBarManager.add(configAction);
@@ -253,7 +288,6 @@ public class CmakeConfigurationsEditor extends EditorPart {
 		return buildType;
 	}
 
-	
 	private void addBuildConfiguration(String name, String buildType) {
 		store.execute((CMakeOptions options) -> {
 			CMakeBuildConfigurationOptions buildConfigurationOptions = getBuildConfigurationOptions(options, name);

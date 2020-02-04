@@ -48,6 +48,16 @@ public class DebugPane {
 		this.store = store;
 	}
 
+	private String getActiveBuildconfigName() {
+		try {
+			return project.getActiveBuildConfig().getName();
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return "";
+	}
+
 	private Action createCConfigDumpAction() {
 		Action cdtConfigsAction = new Action("C") {
 			@Override
@@ -55,11 +65,15 @@ public class DebugPane {
 				String text;
 				if (project != null) {
 					text = "Project: " + project.getName() + " {\n";
+					String activeBuildconfigName = getActiveBuildconfigName();
 					try {
 						ICBuildConfigurationManager service = Activator.getService(ICBuildConfigurationManager.class);
 						IBuildConfiguration[] buildConfigs = project.getBuildConfigs();
 						for (IBuildConfiguration bc : buildConfigs) {
 							text += "  BuildConfig: \"" + bc.getName() + "\" {\n";
+							if (activeBuildconfigName.equals(bc.getName())) {
+								text += "    active=true\n";
+							}
 							ICBuildConfiguration cbc = service.getBuildConfiguration(bc);
 							if (cbc != null) {
 								text += "    CBuildConfig: {\n";
